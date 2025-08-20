@@ -2,9 +2,11 @@ name: Test Registry Events
 on:
   registry_package:
     types: [published, updated]  
-  push: 
-    branches: [main]
-
+    
+concurrency:
+  group: ${{ contains(github.event.registry_package.package_version.container_metadata.tag.name || '', 'aux-') && 'grupo' }}
+  cancel-in-progress: true
+  
 jobs:
   log:
     runs-on: ubuntu-latest
