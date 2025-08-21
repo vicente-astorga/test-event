@@ -4,7 +4,7 @@ on:
     types: [published, updated]  
     
 concurrency:
-  group: ${{ contains(github.event.registry_package.package_version.container_metadata.tag.name || '', 'aux-') && 'grupo' }}
+  group: ${{ contains(github.event.registry_package.name || '', 'test-event') && 'grupo' }}
   cancel-in-progress: true
   
 jobs:
