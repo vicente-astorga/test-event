@@ -26,7 +26,6 @@ jobs:
   k8s-deploy-package:
     needs: [detect-version]
     if: ${{ github.event.registry_package.package_type == 'container'
-          && contains(github.event.registry_package.name || '', 'openedx')
           && needs.detect-version.outputs.supported == 'true' }}
     concurrency:
       group: ${{ format('deploy-{0}', needs.detect-version.outputs.version_group) }}
