@@ -2,13 +2,35 @@ name: Test Registry Events
 on:
   registry_package:
     types: [published, updated]  
-    
-concurrency:
-  group: ${{ contains(github.event.registry_package.name || '', 'test-event') && 'grupo' }}
-  cancel-in-progress: true
   
 jobs:
-  log:
+  detect-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version_group: ${{ steps.detect.outputs.version_group }}
+      supported: ${{ steps.detect.outputs.supported }}
+    steps:
+      - id: detect
+        run: |
+          set -euo pipefail
+          TAG="${{ github.event.registry_package.package_version.container_metadata.tag.name || '' }}"
+          VER="$(printf '%s\n' "$TAG" | sed -nE 's/^(.*-)?umce-([0-9]+)(-|$).*/\2/p')"
+          if [ -n "${VER:-}" ]; then
+            echo "supported=true" >> "$GITHUB_OUTPUT"
+            echo "version_group=umce-${VER}" >> "$GITHUB_OUTPUT"
+          else
+            echo "supported=false" >> "$GITHUB_OUTPUT"
+            echo "version_group=unknown" >> "$GITHUB_OUTPUT"
+          fi
+
+  k8s-deploy-package:
+    needs: [detect-version]
+    if: ${{ github.event.registry_package.package_type == 'container'
+          && contains(github.event.registry_package.name || '', 'openedx')
+          && needs.detect-version.outputs.supported == 'true' }}
+    concurrency:
+      group: ${{ format('deploy-{0}', needs.detect-version.outputs.version_group) }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
       - run: |
