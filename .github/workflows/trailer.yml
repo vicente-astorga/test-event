@@ -1,0 +1,30 @@
+name: Test skip-checks trailer
+
+on:
+ push:  
+
+jobs:
+  test-skip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create test commit with trailer
+        run: |
+          set -e
+          echo "testing skip-checks at $(date)" > skip-checks-test.txt
+          git config user.name "GH Action Test"
+          git config user.email "action@test.local"
+          git add skip-checks-test.txt
+
+          # Creamos el commit con trailer usando heredoc correctamente indentado
+          git commit --cleanup=verbatim -F- <<'COMMIT'
+          chore: testing skip-checks trailer
+          
+          skip-checks: true
+          COMMIT
+
+          # Mostramos el commit creado para validación
+          git log -1 --pretty=full
+          git push origin HEAD:skip-checks-test
