@@ -17,6 +17,6 @@ jobs:
           git config user.name "GH Action Test"
           git config user.email "action@test.local"
           git add skip-checks-test.txt
-          git commit --cleanup=verbatim -m $'chore: Auto-generate coverage badge\n\nskip-checks: true'
+          git commit --cleanup=verbatim -m 'chore: Auto-generate coverage badge\n\nskip-checks: true'
           git log -1 --pretty=full
           git push origin HEAD:skip-checks-test
