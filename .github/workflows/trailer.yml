@@ -19,4 +19,4 @@ jobs:
           git add skip-checks-test.txt
           git commit --cleanup=verbatim -m 'chore: Auto-generate coverage badge\n\nskip-checks: true'
           git log -1 --pretty=full
-          git push origin HEAD:skip-checks-test
+          git push origin HEAD:main
