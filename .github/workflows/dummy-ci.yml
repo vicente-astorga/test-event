@@ -1,0 +1,9 @@
+name: Dummy CI
+on:
+  push:
+
+jobs:
+  show-if-triggered:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🚀 Dummy CI triggered by push"
